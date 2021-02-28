@@ -1,0 +1,7 @@
+RewriteEngine on
+RewriteCond %{REQUEST_URI} ^/.well-known/autoconfig/mail/config-v1.1.xml [OR]
+RewriteCond %{REQUEST_URI} ^/mail/config-v1.1.xml
+RewriteRule ^ autoconfig.php [NC,L]
+RewriteCond %{REQUEST_URI} ^/autodiscover/autodiscover.xml [OR]
+RewriteCond %{REQUEST_URI} ^/Autodiscover/Autodiscover.xml
+RewriteRule ^ autodiscover.php [NC,L]

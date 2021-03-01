@@ -112,7 +112,7 @@ def manage_domains():
                 enable_80=ssl != 'o', enable_443=ssl != 'n', redirect_ssl=ssl == 'r',
                 custom_root=custom_root if vht == 'c' else None,
                 proxy_port=proxy_port if vht == 'p' else None,
-                cert_name=None if ssl == 'n' else 'vps.szkolny.eu' if cert == 's' else cert,
+                cert_name=None if ssl == 'n' else 'server.hostname' if cert == 's' else cert,
                 config_mail=mail
         )
         return f'Created domain {domain} for user {username}'

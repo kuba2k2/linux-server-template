@@ -9,7 +9,7 @@ It worked on two servers so far, so that's already something.
 Provided you already have apache installed, you need some additional modules.
 
 ```bash
-# apt install apache2-mpm-itk libapache2-mod-authnz-external pwauth
+# apt install libapache2-mpm-itk libapache2-mod-authnz-external pwauth
 # a2enmod authnz_external
 # a2enmod mpm_itk
 # a2enmod macro

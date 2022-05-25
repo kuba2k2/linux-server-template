@@ -95,25 +95,35 @@ def manage_domains():
         print(' * [N]ormal, public_html in user\'s homedir')
         print(' - [C]ustom document root')
         print(' - [P]roxy to a TCP port')
+        print(' - Proxy to another [h]ost')
         vht = input()[:1].lower()
-        vht = 'c' if vht == 'c' else 'p' if vht == 'p' else 'n'
+        vht = 'c' if vht == 'c' else 'p' if vht == 'p' else 'h' if vht == 'h' else 'n'
         if vht == 'c':
             custom_root = input('   Enter path to document root: ')
         elif vht == 'p':
             proxy_port = int(input('    Enter the reverse proxy port: '))
+        elif vht == 'h':
+            proxy_host = input('    Enter target hostname: ')
+            proxy_port = int(input('    Enter target port: '))
         if ssl != 'n':
             cert = input('Existing certificate name, [s] to use server certificate, or empty to obtain new for domain:\n    ')
             if cert == 's':
                 print('    Using server certificate (server.hostname)')
         mail = input('Configure e-mail? (cert + SMTP/POP3/IMAP VHost) [y]es, *[n]o ')[:1].lower() == 'y'
+        if mail:
+            mail_ssl = input('Configure e-mail SSL? *[y]es, [n]o ')[:1].lower() != 'n'
+        else:
+            mail_ssl = False
         domains.create(
                 username,
                 domain, 
                 enable_80=ssl != 'o', enable_443=ssl != 'n', redirect_ssl=ssl == 'r',
                 custom_root=custom_root if vht == 'c' else None,
-                proxy_port=proxy_port if vht == 'p' else None,
+                proxy_port=proxy_port if vht in ['p', 'h'] else None,
+                proxy_host=proxy_host if vht == 'h' else None,
                 cert_name=None if ssl == 'n' else 'server.hostname' if cert == 's' else cert,
-                config_mail=mail
+                config_mail=mail,
+                mail_ssl=mail_ssl
         )
         return f'Created domain {domain} for user {username}'
 

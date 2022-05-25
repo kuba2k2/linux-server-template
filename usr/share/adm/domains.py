@@ -6,7 +6,7 @@ from utils import get_domain_id, get_directive, is_domain_top
 import emails
 
 
-def create(username, domain, enable_80, enable_443, redirect_ssl, custom_root, proxy_port, cert_name, config_mail):
+def create(username, domain, enable_80, enable_443, redirect_ssl, custom_root, proxy_port, proxy_host, cert_name, config_mail, mail_ssl):
     domain_id = get_domain_id(username, domain)
 
     print(f'Domain ID: {domain_id}')
@@ -22,12 +22,12 @@ def create(username, domain, enable_80, enable_443, redirect_ssl, custom_root, p
             if redirect_ssl:
                 f.write(f'\tUse VHostToSSL {domain}\n')
             else:
-                f.write('\t'+get_directive(username, domain, custom_root, proxy_port)+'\n')
+                f.write('\t'+get_directive(username, domain, custom_root, proxy_port, proxy_host)+'\n')
             f.write('</VirtualHost>\n\n')
 
         if enable_443:
             f.write('<VirtualHost *:443>\n')
-            f.write('\t'+get_directive(username, domain, custom_root, proxy_port)+'\n')
+            f.write('\t'+get_directive(username, domain, custom_root, proxy_port, proxy_host)+'\n')
             if cert_name:
                 f.write(f'\tUse LetsEncrypt {cert_name}\n')
             else:
@@ -59,7 +59,7 @@ def create(username, domain, enable_80, enable_443, redirect_ssl, custom_root, p
         f.write(f'HostName {domain}\n')
 
     if config_mail:
-        emails.configure(username, domain, enable_443)
+        emails.configure(username, domain, mail_ssl)
     os.system(f'a2ensite {domain_id}')
     print('Restarting Apache...')
     os.system('service apache2 restart')
@@ -114,6 +114,12 @@ def _load_all():
                         vhost['name'] = line[0]
                         vhost['username'] = line[1]
                         vhost['custom_dir'] = line[2]
+                    elif line.startswith('Use VHostProxyHost'):
+                        line = line.split(' ')[2:]
+                        vhost['name'] = line[0]
+                        vhost['username'] = line[1]
+                        vhost['proxy_host'] = line[2]
+                        vhost['proxy_port'] = line[3]
                     elif line.startswith('Use VHostProxy'):
                         line = line.split(' ')[2:]
                         vhost['name'] = line[0]

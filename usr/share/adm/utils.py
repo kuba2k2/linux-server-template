@@ -5,9 +5,11 @@ from glob import glob
 import string, random
 
 
-def get_directive(username, domain, custom_root, proxy_port):
+def get_directive(username, domain, custom_root, proxy_port, proxy_host):
     if custom_root:
         return f'Use VHostDir {domain} {username} {custom_root}'
+    elif proxy_host:
+        return f'Use VHostProxyHost {domain} {username} {proxy_host} {proxy_port}'
     elif proxy_port:
         return f'Use VHostProxy {domain} {username} {proxy_port}'
     else:
